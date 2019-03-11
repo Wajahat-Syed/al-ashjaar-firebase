@@ -68,36 +68,41 @@
 				      <th scope="col">Job Title</th>
 				      <th scope="col">Timing</th>
 				      <th scope="col">Venue</th>
+				      <th scope="col"></th>
 				    </tr>
 				  </thead>
-				  <tbody>
-				    <tr>
-				      <th scope="row">Painter</th>
-				      <td>2:30 pm</td>
-				      <td>Zakir nagar, 3rd Floor galo no.7</td>
-				    </tr>
-				    <tr>
-				      <th scope="row">Driver</th>
-				      <td>2:30 pm</td>
-				      <td>Zakir nagar, 3rd Floor galo no.7</td>
-				    </tr>
-				    <tr>
-				      <th scope="row">Helper</th>
-				      <td>2:30 pm</td>
-				      <td>Zakir nagar, 3rd Floor galo no.7</td>
-				    </tr>
-				    <tr>
-				      <th scope="row">Doctor</th>
-				      <td>2:30 pm</td>
-				      <td>Zakir nagar, 3rd Floor galo no.7</td>
-				    </tr>
-				    <tr>
-				      <th scope="row">Civil Engineer</th>
-				      <td>2:30 pm</td>
-				      <td>Zakir nagar, 3rd Floor galo no.7</td>
-				    </tr>
+				  <tbody id="walkin-table">
+				    
 				  </tbody>
 				</table>
+			  	<div class="loader"></div>
+			  	<!-- Modal -->
+						<div class="modal fade" id="aplly" tabindex="1" role="dialog" aria-labelledby="apllyTitle" aria-hidden="true">
+						  <div class="modal-dialog modal-dialog-centered" role="document">
+						    <div class="modal-content">
+						      <div class="modal-header">
+						        <h5 class="modal-title" id="exampleModalLongTitle">Are you coming for walkin?</h5>
+						        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						          <span aria-hidden="true">&times;</span>
+						        </button>
+						      </div>
+						      <div class="modal-body">
+						        <form>
+								  <div class="form-group">
+								    <label>Name</label>
+								    <input type="text" class="form-control" placeholder="Enter name">
+								  </div>
+								  <div class="form-group">
+								    <label >Phone</label>
+								    <input type="phone" class="form-control" placeholder="Enter phone number">
+								  </div>
+								  <button type="submit" class="btn btn-primary d-block mx-auto">Send</button>
+								</form>
+						      </div>
+						    </div>
+						  </div>
+						</div>
+				<!-- modal end  -->
 			</div>
 		</div>
 	</div>
@@ -159,6 +164,55 @@
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+
+<script src="https://www.gstatic.com/firebasejs/5.8.6/firebase.js"></script>
+<script>
+	  	var config = {
+		    apiKey: "AIzaSyDsRnh_SoM464drKyOvbO0c4pjKJ2cB6_Y",
+		    authDomain: "al-ashjaar.firebaseapp.com",
+		    databaseURL: "https://al-ashjaar.firebaseio.com",
+		    projectId: "al-ashjaar",
+		    storageBucket: "al-ashjaar.appspot.com",
+		    messagingSenderId: "301017289437"
+	  	};
+	  	firebase.initializeApp(config);
+
+		$(".logout").click(function() {
+			firebase.auth().signOut().then(function() {
+			   alert("Logged out!");
+			   localStorage.setItem("isLogin", false);
+				window.location.href = "admin.html";
+			}, function(error) {
+			   console.log(error.code);
+			   console.log(error.message);
+			});
+		});
+
+	function readAndDisplay() {
+			var ref = firebase.database().ref('walkin/');
+			let tr = '';
+			ref.on("value", function(snapshot) {
+				$(".loader").hide();
+				let data = snapshot.val();
+				let keys = Object.keys(data);
+				for (let i = 0; i < keys.length; i++) {
+					tr += `
+						<tr>
+							<td>${data[keys[i]].jobtitle}</td>
+							<td>${data[keys[i]].time}</td>
+							<td>${data[keys[i]].venue}</td>
+							<td><button class="btn btn-sm btn-success" data-toggle="modal" data-target="#aplly">apply</button></td>
+						</tr>
+					`;
+				}
+				$("#walkin-table").html(tr);
+			}, function (error) {
+			   console.log("Error: " + error.code);
+			});
+		}
+		readAndDisplay();
+	</script>
 
 </body>
 </html>

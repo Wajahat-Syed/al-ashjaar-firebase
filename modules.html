@@ -46,8 +46,7 @@
 				      </li>
 				    </ul>
 				      <form class="form-inline my-2 my-lg-0">
-				      	<button class="btn btn-outline-primary bg-primary mr-2 my-2 my-sm-0" type="button"><a href="signup.html" class="text-white ">Signup</a></button>
-				      	<button class="btn btn-primary btn-outline-success  bg-success mr-2 my-2 my-sm-0" type="button"><a href="admin.html" class="text-white ">login</a></button>				      	
+				      
 				      	<button class="btn btn-primary btn-outline-success  bg-success mr-2 my-2 my-sm-0" type="button"><a href="admin.html" class="text-white ">logout</a></button>	
 					  </form>
 				  </div>
@@ -76,10 +75,10 @@
 				<div class="tab-content" id="myTabContent">
 				  <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
 				  	<!-- Button trigger modal -->
-				  	<button class="btn btn-primary mt-4 " data-toggle="modal" data-target="#exampleModalCenter">Add openings</button>
+				  	<button class="btn btn-primary mt-4 " data-toggle="modal" data-target="#opening-modal">Add openings</button>
 
 					<!-- Modal -->
-					<div class="modal fade" id="exampleModalCenter" tabindex="1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+					<div class="modal fade" id="opening-modal" tabindex="1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 					  <div class="modal-dialog modal-dialog-centered" role="document">
 					    <div class="modal-content">
 					      <div class="modal-header">
@@ -151,22 +150,22 @@
 					        </button>
 					      </div>
 					      <div class="modal-body">
-					        <!-- form for adding current openings -->
-					        <form method="POST" action="modules.php?nonsense=1">
+					        <!-- form for adding walkin -->
+					        <form id="add_walkin_form">
 							  <div class="form-group">
 							    <label >Job title</label>
 							    <input type="text" name="jobtitle" class="form-control" id="" aria-describedby="emailHelp" placeholder="title">
 							  </div>
 							  <div class="form-group">
 							    <label >Time</label>
-							    <input type="text" name="qty" class="form-control" id="" placeholder="Enter time">
+							    <input type="text" name="time" class="form-control" id="" placeholder="Enter time">
 							  </div>
 							  <div class="form-group">
 							    <label >Venue</label>
-							    <input type="text" name="country" class="form-control" id="" placeholder="Enter Venue">
+							    <input type="text" name="venue" class="form-control" id="" placeholder="Enter Venue">
 							  </div>
 							  
-							  <button type="submit" name="addjob-btn" class="btn btn-primary mx-auto d-block ">Submit</button>
+							  <button type="submit" name="addWalkin-btn" class="btn btn-primary mx-auto d-block ">Submit</button>
 							</form>
 					        <!-- form end -->
 					      </div>
@@ -182,29 +181,10 @@
 					      <th scope="col">job title</th>
 					      <th scope="col">Time</th>
 					      <th scope="col">Venue</th>
+					      <th scope="col"></th>
 					    </tr>
 					  </thead>
-					  <tbody>
-					    <tr>
-					      <th scope="row">Painter</th>
-					      <td>2:30 pm</td>
-					      <td>zakir nagar gali no.7</td>
-					    </tr>
-					    <tr>
-					      <th scope="row">Doctor</th>
-					      <td>2:00 pm</td>
-					      <td>zakir nagar gali no.7</td>
-					    </tr>
-					    <tr>
-					      <th scope="row">Helper</th>
-					      <td>2</td>
-					      <td>zakir nagar gali no.7</td>
-					    </tr>
-					    <tr>
-					      <th scope="row">Welder</th>
-					      <td>2</td>
-					      <td>zakir nagar gali no.7</td>
-					    </tr>
+					  <tbody id="walkin_table">
 					  </tbody>
 					</table>
 
@@ -309,6 +289,7 @@
 <script src="https://www.gstatic.com/firebasejs/5.8.6/firebase.js"></script>
 
 	<script>
+		// connection
 	  	var config = {
 		    apiKey: "AIzaSyDsRnh_SoM464drKyOvbO0c4pjKJ2cB6_Y",
 		    authDomain: "al-ashjaar.firebaseapp.com",
@@ -318,7 +299,7 @@
 		    messagingSenderId: "301017289437"
 	  	};
 	  	firebase.initializeApp(config);
-
+	  	// logout
 		$(".logout").click(function() {
 			firebase.auth().signOut().then(function() {
 			   alert("Logged out!");
@@ -343,12 +324,13 @@
 			openref.push(obj).then(function() {
 				swal("Success insert openings");
 				$("#add_open_form").trigger('reset');
+				$('#opening-modal').modal().close();
 				readAndDisplay();
-				// $("#exampleModalCenter").modal("closed");
+				// $("#opening-modal").modal("closed");
 
 			});
 		});
-
+		// to create object in db
 		function formToObject(id) {
 			let temp = {};
 			$("#add_open_form input").each(function() {
@@ -356,7 +338,7 @@
 			});
 			return temp;
 		}
-
+		//fetch and display data in dynamically generated table 
 		function readAndDisplay() {
 			var ref = firebase.database().ref('openings/');
 			let tr = '';
@@ -382,7 +364,50 @@
 		}
 		readAndDisplay();
 		// walkin
+		$("#add_walkin_form").submit(function(e) {
+			e.preventDefault();
+			var openref = firebase.database().ref("walkin/");
+			let obj = formToObjectWalkin();
+			openref.push(obj).then(function() {
+				swal("Success insert walkin");
+				$("#add_walkin_form").trigger('reset');
+				readAndDisplayWalkin();
+				// $("#opening-modal").modal("closed");
 
+			});
+		});
+		// to create object in db
+		function formToObjectWalkin(id) {
+			let temp = {};
+			$("#add_walkin_form input").each(function() {
+				temp[$(this).attr("name")] = $(this).val();
+			});
+			return temp;
+		}
+		//fetch and display data in dynamically generated table 
+		function readAndDisplayWalkin() {
+			var ref = firebase.database().ref('walkin/');
+			let tr = '';
+			ref.on("value", function(snapshot) {
+				$(".loader").hide();
+				let data = snapshot.val();
+				let keys = Object.keys(data);
+				for (let i = 0; i < keys.length; i++) {
+					tr += `
+						<tr>
+							<td>${data[keys[i]].jobtitle}</td>
+							<td>${data[keys[i]].time}</td>
+							<td>${data[keys[i]].venue}</td>
+							<td><i class="far fa-trash-alt text-danger"></i></td>
+						</tr>
+					`;
+				}
+				$("#walkin_table").html(tr);
+			}, function (error) {
+			   console.log("Error: " + error.code);
+			});
+		}
+		readAndDisplayWalkin();
 		// walkin end
 </script>
 </body>
