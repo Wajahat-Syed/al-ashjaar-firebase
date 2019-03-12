@@ -1,5 +1,4 @@
-
-<!DOCTYPE html>
+c2<!DOCTYPE html>
 <html>
 <head>
 	<title>alAshjaar pvt ltd</title>
@@ -347,13 +346,14 @@
 				let data = snapshot.val();
 				let keys = Object.keys(data);
 				for (let i = 0; i < keys.length; i++) {
+					var current_row = keys[i];
 					tr += `
 						<tr>
 							<td>${data[keys[i]].jobtitle}</td>
 							<td>${data[keys[i]].qty}</td>
 							<td>${data[keys[i]].country}</td>
 							<td>${data[keys[i]].salary}</td>
-							<td><i class="far fa-trash-alt text-danger"></i></td>
+							<td><i class="far fa-trash-alt text-danger" onclick="deleteRow('${current_row}')"></i></td>
 						</tr>
 					`;
 				}
@@ -363,6 +363,13 @@
 			});
 		}
 		readAndDisplay();
+
+		function deleteRow(row){
+			var addRef = firebase.database().ref("openings/"+row);
+			console.log(addRef);
+			addRef.remove();
+			readAndDisplay();
+		}
 		// walkin
 		$("#add_walkin_form").submit(function(e) {
 			e.preventDefault();
