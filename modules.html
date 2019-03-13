@@ -153,15 +153,15 @@
 					        <form id="add_walkin_form">
 							  <div class="form-group">
 							    <label >Job title</label>
-							    <input type="text" name="jobtitle" class="form-control" id="" aria-describedby="emailHelp" placeholder="title">
+							    <input type="text" required name="jobtitle" class="form-control" id="" aria-describedby="emailHelp" placeholder="title">
 							  </div>
 							  <div class="form-group">
 							    <label >Time</label>
-							    <input type="text" name="time" class="form-control" id="" placeholder="Enter time">
+							    <input type="text" required name="time" class="form-control" id="" placeholder="Enter time">
 							  </div>
 							  <div class="form-group">
 							    <label >Venue</label>
-							    <input type="text" name="venue" class="form-control" id="" placeholder="Enter Venue">
+							    <input type="text" required name="venue" class="form-control" id="" placeholder="Enter Venue">
 							  </div>
 							  
 							  <button type="submit" name="addWalkin-btn" class="btn btn-primary mx-auto d-block ">Submit</button>
@@ -352,9 +352,13 @@
 
 		function deleteRow(row){
 			var addRef = firebase.database().ref('openings/'+row);
-			console.log(addRef);
 			addRef.remove();
 			readAndDisplay();
+		}
+		function deleteWalkinRow(row){
+			var addRef = firebase.database().ref('walkin/'+row);
+			addRef.remove();
+			readAndDisplayWalkin();
 		}
 		// walkin
 		$("#add_walkin_form").submit(function(e) {
@@ -386,12 +390,13 @@
 				let data = snapshot.val();
 				let keys = Object.keys(data);
 				for (let i = 0; i < keys.length; i++) {
+					var current_row = keys[i];
 					tr += `
 						<tr>
 							<td>${data[keys[i]].jobtitle}</td>
 							<td>${data[keys[i]].time}</td>
 							<td>${data[keys[i]].venue}</td>
-							<td><i class="far fa-trash-alt text-danger"></i></td>
+							<td><i class="far fa-trash-alt text-danger" onclick="deleteWalkinRow('${current_row}')"></i></td>
 						</tr>
 					`;
 				}
