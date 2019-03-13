@@ -1,4 +1,4 @@
-c2<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 	<title>alAshjaar pvt ltd</title>
@@ -18,7 +18,7 @@ c2<!DOCTYPE html>
 		<div class="row">
 			<div class="col">
 				<nav class="navbar navbar-expand-lg navbar-dark">
-				  <a class="navbar-brand" href="#"> <img src="images/sufiana-white.png" alt=""></a>
+				  <a class="navbar-brand" href="index.html"> <img src="images/sufiana-white.png" alt=""></a>
 				  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 				    <span class="navbar-toggler-icon"></span>
 				  </button>
@@ -116,7 +116,7 @@ c2<!DOCTYPE html>
 					</div>
 					<!-- modal end -->
 					<!-- openings table -->
-					<table class="table mt-4">
+					<table class="table mt-4 table-hover">
 					  <thead class="thead-dark">
 					    <tr>
 					      <th scope="col">job title</th>
@@ -174,7 +174,7 @@ c2<!DOCTYPE html>
 					</div>
 					<!-- modal end -->
 					<!-- interview table -->
-					<table class="table mt-4">
+					<table class="table mt-4 table-hover">
 					  <thead class="thead-dark">
 					    <tr>
 					      <th scope="col">job title</th>
@@ -186,39 +186,24 @@ c2<!DOCTYPE html>
 					  <tbody id="walkin_table">
 					  </tbody>
 					</table>
-
+					<div class="loader"></div>
 					<!-- interview table end -->
 				  </div>
 				</div>
 				  <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
 				  	<!-- who applied table -->
-					<table class="table mt-4">
+					<table class="table mt-4 table-hover">
 					  <thead class="thead-dark">
 					    <tr>
 					      <th scope="col">Name</th>
 					      <th scope="col">Phone</th>
 					    </tr>
 					  </thead>
-					  <tbody>
-					    <tr>
-					      <th scope="row">Adil Saifi</th>
-					      <td>988557621</td>
-					    </tr>
-					    <tr>
-					      <th scope="row">Rauf</th>
-					      <td>4585756421</td>
-					    </tr>
-					    <tr>
-					      <th scope="row">Sameer khan</th>
-					      <td>9668572152</td>
-					    </tr>
-					    <tr>
-					      <th scope="row">Kaleemullah Khan</th>
-					      <td>7586895412</td>
-					    </tr>
+					  <tbody id="aplly_table">
+					    
 					  </tbody>
 					</table>
-
+					<div class="loader"></div>
 					<!-- who applied table end -->
 				  </div>
 				</div>
@@ -284,6 +269,8 @@ c2<!DOCTYPE html>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.8.6/firebase.js"></script>
 
@@ -323,7 +310,6 @@ c2<!DOCTYPE html>
 			openref.push(obj).then(function() {
 				swal("Success insert openings");
 				$("#add_open_form").trigger('reset');
-				$('#opening-modal').modal().close();
 				readAndDisplay();
 				// $("#opening-modal").modal("closed");
 
@@ -365,7 +351,7 @@ c2<!DOCTYPE html>
 		readAndDisplay();
 
 		function deleteRow(row){
-			var addRef = firebase.database().ref("openings/"+row);
+			var addRef = firebase.database().ref('openings/'+row);
 			console.log(addRef);
 			addRef.remove();
 			readAndDisplay();
@@ -416,6 +402,37 @@ c2<!DOCTYPE html>
 		}
 		readAndDisplayWalkin();
 		// walkin end
+
+		// apply_table
+		function readAndDisplayaplly() {
+			var ref = firebase.database().ref('whoapplied/');
+			let tr = '';
+			ref.on("value", function(snapshot) {
+				$(".loader").hide();
+				let data = snapshot.val();
+				let keys = Object.keys(data);
+				for (let i = 0; i < keys.length; i++) {
+					tr += `
+						<tr>
+							<td>${data[keys[i]].name}</td>
+							<td>${data[keys[i]].phone}</td>
+						</tr>
+					`;
+				}
+				$("#aplly_table").html(tr);
+			}, function (error) {
+			   console.log("Error: " + error.code);
+			});
+		}
+		readAndDisplayaplly();
+		// apply table ends
+		// update who applied table everyday
+		(function(){
+			var date = new Date();
+			if(date.getHours() == 0){
+				firebase.database().ref('whoapplied/').remove();
+			}
+		})();
 </script>
 </body>
 </html>

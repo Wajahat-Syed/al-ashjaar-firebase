@@ -23,7 +23,7 @@
 		<div class="row">
 			<div class="col">
 				<nav class="navbar navbar-expand-lg navbar-dark">
-				  <a class="navbar-brand" href="index.php"> <img src="images/sufiana-white.png" alt=""></a>
+				  <a class="navbar-brand" href="index.html"> <img src="images/sufiana-white.png" alt=""></a>
 				  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 				    <span class="navbar-toggler-icon"></span>
 				  </button>
@@ -62,7 +62,7 @@
 		<div class="row">
 			<div class="col">
 				<h1>Walkin Interview</h1>
-				<table class="table mt-4">
+				<table class="table mt-4 table-hover">
 				  <thead class="thead-dark">
 				    <tr>
 				      <th scope="col">Job Title</th>
@@ -77,7 +77,7 @@
 				</table>
 			  	<div class="loader"></div>
 			  	<!-- Modal -->
-						<div class="modal fade" id="aplly" tabindex="1" role="dialog" aria-labelledby="apllyTitle" aria-hidden="true">
+						<div class="modal fade" id="aplly_modal" tabindex="1" role="dialog" aria-labelledby="apllyTitle" aria-hidden="true">
 						  <div class="modal-dialog modal-dialog-centered" role="document">
 						    <div class="modal-content">
 						      <div class="modal-header">
@@ -87,14 +87,14 @@
 						        </button>
 						      </div>
 						      <div class="modal-body">
-						        <form>
+						        <form id="apply_form">
 								  <div class="form-group">
 								    <label>Name</label>
-								    <input type="text" class="form-control" placeholder="Enter name">
+								    <input type="text" name="name" class="form-control" placeholder="Enter name">
 								  </div>
 								  <div class="form-group">
 								    <label >Phone</label>
-								    <input type="phone" class="form-control" placeholder="Enter phone number">
+								    <input type="phone" name="phone" class="form-control" placeholder="Enter phone number">
 								  </div>
 								  <button type="submit" class="btn btn-primary d-block mx-auto">Send</button>
 								</form>
@@ -165,6 +165,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/5.8.6/firebase.js"></script>
 <script>
@@ -189,29 +190,49 @@
 			});
 		});
 
-	function readAndDisplay() {
-			var ref = firebase.database().ref('walkin/');
-			let tr = '';
-			ref.on("value", function(snapshot) {
-				$(".loader").hide();
-				let data = snapshot.val();
-				let keys = Object.keys(data);
-				for (let i = 0; i < keys.length; i++) {
-					tr += `
-						<tr>
-							<td>${data[keys[i]].jobtitle}</td>
-							<td>${data[keys[i]].time}</td>
-							<td>${data[keys[i]].venue}</td>
-							<td><button class="btn btn-sm btn-success" data-toggle="modal" data-target="#aplly">apply</button></td>
-						</tr>
-					`;
-				}
-				$("#walkin-table").html(tr);
-			}, function (error) {
-			   console.log("Error: " + error.code);
+		// apply form
+		$("#apply_form").submit(function(e) {
+			e.preventDefault();
+			var openref = firebase.database().ref("whoapplied/");
+			let obj = applyformToObject();
+			openref.push(obj).then(function() {
+				$("#apply_form").trigger('reset');
+				swal("we will contact you soon");
+				// $("#opening-modal").modal("closed");
 			});
+		});
+		// to create object in db
+		function applyformToObject() {
+			let temp = {};
+			$("#apply_form input").each(function() {
+				temp[$(this).attr("name")] = $(this).val();
+			});
+			return temp;
 		}
-		readAndDisplay();
+		// fetching data from walkin db
+		function readAndDisplay() {
+				var ref = firebase.database().ref('walkin/');
+				let tr = '';
+				ref.on("value", function(snapshot) {
+					$(".loader").hide();
+					let data = snapshot.val();
+					let keys = Object.keys(data);
+					for (let i = 0; i < keys.length; i++) {
+						tr += `
+							<tr>
+								<td>${data[keys[i]].jobtitle}</td>
+								<td>${data[keys[i]].time}</td>
+								<td>${data[keys[i]].venue}</td>
+								<td><button class="btn btn-sm btn-success" data-toggle="modal" data-target="#aplly_modal">apply</button></td>
+							</tr>
+						`;
+					}
+					$("#walkin-table").html(tr);
+				}, function (error) {
+				   console.log("Error: " + error.code);
+				});
+			}
+			readAndDisplay();
 	</script>
 
 </body>

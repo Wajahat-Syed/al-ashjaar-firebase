@@ -16,7 +16,7 @@
 		<div class="row">
 			<div class="col">
 				<nav class="navbar navbar-expand-lg navbar-dark">
-				  <a class="navbar-brand" href="index.php"> <img src="images/sufiana-white.png" alt=""></a>
+				  <a class="navbar-brand" href="index.html"> <img src="images/sufiana-white.png" alt=""></a>
 				  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 				    <span class="navbar-toggler-icon"></span>
 				  </button>
@@ -168,7 +168,6 @@
 			var pass = $("#pwd").val();
 			var passRepeat = $("#pwd-repeat").val();
 			if (pass == passRepeat) {
-				console.log("this1");
 				firebase.auth().createUserWithEmailAndPassword(email, pass).then(function() {
 					alert('success signup');
 				}).catch(function(error) {
@@ -178,7 +177,6 @@
 			}
 			else{
 				swal("!!Oops", "ypu have entered wromg password",
-
 					);
 			}
 		});
