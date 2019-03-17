@@ -29,10 +29,10 @@
 				        <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
 				      </li>
 				      <li class="nav-item">
-				        <a class="nav-link" href="#">About Us</a>
+				        <a class="nav-link" href="./index.html#about">About Us</a>
 				      </li>
 				      <li class="nav-item">
-				        <a class="nav-link" href="#">Our Clients</a>
+				        <a class="nav-link" href="./index.html#clients">Our Clients</a>
 				      </li>
 				      <li class="nav-item">
 				        <a class="nav-link" href="current-opening.html">Current openings</a>
@@ -153,15 +153,15 @@
 					        <form id="add_walkin_form">
 							  <div class="form-group">
 							    <label >Job title</label>
-							    <input type="text" required name="jobtitle" class="form-control" id="" aria-describedby="emailHelp" placeholder="title">
+							    <input type="text"  name="jobtitle" class="form-control" id="" aria-describedby="emailHelp" placeholder="title">
 							  </div>
 							  <div class="form-group">
 							    <label >Time</label>
-							    <input type="text" required name="time" class="form-control" id="" placeholder="Enter time">
+							    <input type="text"  name="time" class="form-control" id="" placeholder="Enter time">
 							  </div>
 							  <div class="form-group">
 							    <label >Venue</label>
-							    <input type="text" required name="venue" class="form-control" id="" placeholder="Enter Venue">
+							    <input type="text"  name="venue" class="form-control" id="" placeholder="Enter Venue">
 							  </div>
 							  
 							  <button type="submit" name="addWalkin-btn" class="btn btn-primary mx-auto d-block ">Submit</button>
@@ -275,6 +275,7 @@
 <script src="https://www.gstatic.com/firebasejs/5.8.6/firebase.js"></script>
 
 	<script>
+		var count = 0;
 		// connection
 	  	var config = {
 		    apiKey: "AIzaSyDsRnh_SoM464drKyOvbO0c4pjKJ2cB6_Y",
@@ -308,6 +309,7 @@
 			var openref = firebase.database().ref("openings/");
 			let obj = formToObject();
 			openref.push(obj).then(function() {
+				count++;
 				swal("Success insert openings");
 				$("#add_open_form").trigger('reset');
 				readAndDisplay();
@@ -316,7 +318,7 @@
 			});
 		});
 		// to create object in db
-		function formToObject(id) {
+		function formToObject() {
 			let temp = {};
 			$("#add_open_form input").each(function() {
 				temp[$(this).attr("name")] = $(this).val();
@@ -324,6 +326,7 @@
 			return temp;
 		}
 		//fetch and display data in dynamically generated table 
+		
 		function readAndDisplay() {
 			var ref = firebase.database().ref('openings/');
 			let tr = '';
@@ -331,7 +334,9 @@
 				$(".loader").hide();
 				let data = snapshot.val();
 				let keys = Object.keys(data);
+				console.log(keys.length);
 				for (let i = 0; i < keys.length; i++) {
+					
 					var current_row = keys[i];
 					tr += `
 						<tr>
@@ -351,8 +356,15 @@
 		readAndDisplay();
 
 		function deleteRow(row){
+			if(count == 0)
+			{
+				console.log("ham hain yahan");
+				$("#opening_table").html('');
+
+			}
 			var addRef = firebase.database().ref('openings/'+row);
 			addRef.remove();
+			count--;
 			readAndDisplay();
 		}
 		function deleteWalkinRow(row){
