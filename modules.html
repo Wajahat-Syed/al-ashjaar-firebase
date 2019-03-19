@@ -423,19 +423,20 @@
 		// apply_table
 		function readAndDisplayaplly() {
 			var ref = firebase.database().ref('whoapplied/');
+			var d = new Date();
+			d.setHours(0,0,0,0);
 			let tr = '';
-			ref.on("value", function(snapshot) {
+			ref.orderByChild("date").startAt(d.getTime()).on("child_added", function(snapshot) {
 				$(".loader").hide();
 				let data = snapshot.val();
+				console.log(data);
 				let keys = Object.keys(data);
-				for (let i = 0; i < keys.length; i++) {
-					tr += `
-						<tr>
-							<td>${data[keys[i]].name}</td>
-							<td>${data[keys[i]].phone}</td>
-						</tr>
-					`;
-				}
+				tr += `
+					<tr>
+						<td>${data.name}</td>
+						<td>${data.phone}</td>
+					</tr>
+				`;
 				$("#aplly_table").html(tr);
 			}, function (error) {
 			   console.log("Error: " + error.code);
@@ -446,8 +447,9 @@
 		// update who applied table everyday
 		(function(){
 			var date = new Date();
-			if(date.getHours() == 0){
-				firebase.database().ref('whoapplied/').remove();
+			if(date.getMinutes() == 34){
+				console.log("aghjk");
+				// firebase.database().ref('whoapplied/').remove();
 			}
 		})();
 </script>

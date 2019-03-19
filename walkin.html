@@ -207,6 +207,7 @@
 			$("#apply_form input").each(function() {
 				temp[$(this).attr("name")] = $(this).val();
 			});
+			temp['date'] = new Date().getTime();
 			return temp;
 		}
 		// fetching data from walkin db
